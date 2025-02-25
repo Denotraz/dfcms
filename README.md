@@ -17,6 +17,12 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 - **Database:** MySQL
 - **Security:** SHA-256 Hashing
 
+## Current Progress
+- **Database schema** (Beta)
+-  Flask backend (In progress)
+-  React frontend (Not started)
+-  API endpoints (Planned)
+-  Authentication system (Planned)
 ---
 
 ## Installation Guide
