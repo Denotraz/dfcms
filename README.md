@@ -30,3 +30,5 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 ```bash
 git clone https://github.com/Denotraz/dfcms.git
 cd dfcms
+
+#WIP
