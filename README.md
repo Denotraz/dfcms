@@ -11,7 +11,7 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 -  **Investigator workload tracking**
 -  **Secure authentication & access restrictions**
 
-## 🛠️ Technologies Used
+## Technologies Used
 - **Frontend:** React, HTML, CSS, Bootstrap
 - **Backend:** Flask, Python
 - **Database:** MySQL
@@ -19,7 +19,7 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 
 ---
 
-## 🚀 Installation Guide
+## Installation Guide
 ### **1️ Clone the Repository**
 ```bash
 git clone https://github.com/Denotraz/dfcms.git
