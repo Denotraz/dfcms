@@ -2,7 +2,6 @@
     background: black;
     border: 5px dashed purple;
     border-radius: 50%;
-    box-shadow: 0 0 20px 5px rgba(238, 238, 238, 0.8), inset 0 0 10px 2px rgba(0, 255, 255, 0.8);
     color: white;
     font-size: 1.5rem;
     font-weight: bold;

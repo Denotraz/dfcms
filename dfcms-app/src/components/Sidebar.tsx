@@ -76,7 +76,7 @@ export default function AnchorTemporaryDrawer() {
 
   return (
     <div>
-      {(["Sidebar"] as const).map((anchor) => (
+      {(["left"] as const).map((anchor) => (
         <React.Fragment key={anchor}>
           <Button className="button" onClick={toggleDrawer(anchor, true)}>
             {anchor}
