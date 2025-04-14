@@ -2,8 +2,10 @@ const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
 const bcrypt = require("bcrypt"); // Ensure bcrypt is installed
-
+const jwt = require("jsonwebtoken");
 const app = express();
+
+const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
 // Enable CORS for cross-origin requests
 app.use(cors());
@@ -17,6 +19,21 @@ const connection = mysql.createConnection({
   password: "Hailstorm99!", // Replace with your MySQL password
   database: "dfcms", // Replace with your database name
 });
+
+function verifyToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) return res.status(401).json({ error: "No token provicded" });
+
+  const token = authHeader.split(" ")[1];
+
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Invalid or expired token" });
+
+    req.user = decoded;
+    next();
+  });
+}
 
 app.get("/api/test-db", (req, res) => {
   connection.query("SELECT 1 AS test", (error, results) => {
@@ -33,26 +50,29 @@ app.get("/api/ping", (req, res) => {
   res.json({ message: "pong" });
 });
 
-
 app.get("/api/cases", (req, res) => {
-    const query = "select * from cases";
-    connection.query(query, (error, results) => {
-        if (error) {
-            console.error("Database error:", error);
-            return res.status(500).json({ error: 'Database error' });
-        }
-        res.json(results);
-    });
+  const query = "select * from cases";
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error("Database error:", error);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
 });
 
+app.post("/api/cases",verifyToken, (req, res) => {
+  const userRole = req.user.role;
 
-app.post('/api/cases', (req, res) => {
+  if (userRole !== "investigator" && userRole !== "dba"){
+    return res.status(403).json({ error: "Permission denied" });
+  }
   // Destructure the fields that are expected from the request body.
   const { case_id, title, cdescription, cstatus, assigned_to } = req.body;
 
   // Validate that all fields are provided (you can adjust as needed)
   if (!case_id || !title || !cdescription || !cstatus || !assigned_to) {
-    return res.status(400).json({ error: 'All fields are required.' });
+    return res.status(400).json({ error: "All fields are required." });
   }
 
   const query = `
@@ -60,13 +80,17 @@ app.post('/api/cases', (req, res) => {
     VALUES (?, ?, ?, ?, CURDATE(), CURDATE(), ?)
   `;
 
-  connection.query(query, [case_id, title, cdescription, cstatus, assigned_to], (error, results) => {
-    if (error) {
-      console.error('Database error:', error);
-      return res.status(500).json({ error: 'Database error' });
+  connection.query(
+    query,
+    [case_id, title, cdescription, cstatus, assigned_to],
+    (error, results) => {
+      if (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ success: true, insertedId: results.insertId });
     }
-    res.json({ success: true, insertedId: results.insertId });
-  });
+  );
 });
 
 // Login endpoint using bcrypt for password comparison
@@ -104,8 +128,16 @@ app.post("/api/login", (req, res) => {
       }
 
       if (match) {
+        const user = {
+          id: results[0].investigator_id,
+          name: results[0].invname,
+          email: results[0].email,
+          role: results[0].invrole,
+        };
+
+        const token = jwt.sign(user, JWT_SECRET, { expiresIn: "1h" });
         // Passwords match; authentication successful
-        return res.json({ success: true, user: results[0] });
+        return res.json({ success: true, user, token });
       } else {
         // Passwords do not match
         return res

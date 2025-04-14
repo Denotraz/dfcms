@@ -23,7 +23,9 @@ const SignIn: React.FC = () => {
   
         const data = await response.json();
   
-        if (response.ok && data.success) {
+        if (response.ok && data.success && data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
           // If the login is successful, navigate to the dashboard
           navigate("/dashboard");
         } else {
@@ -37,7 +39,16 @@ const SignIn: React.FC = () => {
     };
 
   const handleGuestLogin = () => {
-    navigate("/dashboard");
+    const guestUser = {
+      name: 'Guest',
+      role: 'guest',
+    };
+
+    const guestToken = JSON.stringify({user: guestUser, guest: true});
+
+    localStorage.setItem('token', guestToken);
+    localStorage.setItem('user', JSON.stringify(guestUser));
+    navigate('/dashboard');
   };
 
   return (

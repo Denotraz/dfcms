@@ -10,7 +10,7 @@ export default function BasicButtons({ onClick }: BasicButtonsProps) {
   return (
     <Stack spacing={2} direction="row">
       <Button variant="contained" onClick={onClick}>
-        Login
+        Logout
       </Button>
     </Stack>
   );

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import "./Dashboard.css";
+import { useNavigate } from "react-router-dom";
 import BasicTable from "../components/Table";
 import { Box, Toolbar, Fab } from "@mui/material";
 import Sidebar from "../components/Sidebar";
 import NewCaseModal from "../components/NewCaseModal";
 import AddIcon from "@mui/icons-material/Add";
-import BasicButtons from "../components/LoginButton";
+import BasicButtons from "../components/LogoutButton";
+import { logout } from "../utils/auth";
 
 // Define an interface for your case data
 export interface CaseData {
@@ -20,6 +22,9 @@ export interface CaseData {
 }
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const drawerWidth = 240;
   const [modalOpen, setModalOpen] = useState(false);
   const [cases, setCases] = useState<CaseData[]>([]);
@@ -37,6 +42,17 @@ const Dashboard: React.FC = () => {
 
   // Fetch cases when the component mounts
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    if (!token || !storedUser) {
+      navigate("/");
+      return;
+    }
+    const user = JSON.parse(storedUser);
+    setUserName(user.name);
+    setUserRole(user.role);
+
     fetchCases();
   }, []);
 
@@ -57,9 +73,14 @@ const Dashboard: React.FC = () => {
     assigned_to: string;
   }) => {
     try {
+      const token = localStorage.getItem("token");
+
       const response = await fetch("http://localhost:3001/api/cases", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(newCase),
       });
       if (!response.ok) {
@@ -85,11 +106,19 @@ const Dashboard: React.FC = () => {
         }}
       >
         <Toolbar />
-        <div className="logo-container" style={{ position: "absolute", top: 16, right: 16 }}>
-          <BasicButtons onClick={() => (window.location.href = "/")} />
+        <div
+          className="logo-container"
+          style={{ position: "absolute", top: 16, right: 16 }}
+        >
+          <BasicButtons
+            onClick={() => {
+              logout();
+              window.location.href = "/";
+            }}
+          />
         </div>
         <div className="logo-container">
-          <h1>Welcome to the dashboard!</h1>
+          <h1>Welcome, {userName}</h1>
         </div>
         {/* Floating Action Button to open the new case modal */}
         <Fab
