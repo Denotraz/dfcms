@@ -122,32 +122,41 @@ app.get("/api/evidence/:case_id", (req, res) => {
   });
 });
 
-app.get("/api/verify-evidence/:case_id/:evidence_id", (req, res) => {
+app.get('/api/verify-evidence/:case_id/:evidence_id', (req, res) => {
   const { case_id, evidence_id } = req.params;
 
-  const query = `SELECT file_path, hash_value FROM evidence WHERE case_id = ? AND evidence_id = ?`;
+  const query = `
+    SELECT file_path, hash_value FROM evidence
+    WHERE case_id = ? AND evidence_id = ?
+  `;
+
   connection.query(query, [case_id, evidence_id], (err, results) => {
-    if (err || results.length === 0) {
-      return res
-        .status(500)
-        .json({ error: "Database error or evidence not found" });
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Evidence not found" });
     }
 
     const { file_path, hash_value } = results[0];
+
+    // Recalculate hash
     try {
       const fileBuffer = fs.readFileSync(file_path);
-      const currentHash = crypto
-        .createHash("sha256")
-        .update(fileBuffer)
-        .digest("hex");
+      const currentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
-      if (currentHash === hash_value) {
-        res.json({ verified: true, message: "File is intact" });
-      } else {
-        res.json({ verified: false, message: "File has been altered" });
-      }
+      const isMatch = currentHash === hash_value;
+      return res.json({
+        match: isMatch,
+        storedHash: hash_value,
+        currentHash,
+        message: isMatch ? "Evidence is intact." : "WARNING: Evidence may have been tampered with!",
+      });
     } catch (fileErr) {
-      res.status(500).json({ error: "Error reading file" });
+      console.error("File read error:", fileErr);
+      return res.status(500).json({ error: "Failed to read evidence file." });
     }
   });
 });
