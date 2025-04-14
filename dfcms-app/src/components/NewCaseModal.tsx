@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -6,27 +6,40 @@ import {
   DialogActions,
   Button,
   TextField,
-} from '@mui/material';
+} from "@mui/material";
 
 interface NewCaseModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (newCase: {
+  onSave?: (newCase: {
     case_id: string;
     title: string;
     cdescription: string;
     cstatus: string;
     assigned_to: string;
   }) => void;
+  readOnly?: boolean;
+  defaultData?: {
+    case_id: string;
+    title: string;
+    cdescription: string;
+    cstatus: string;
+    assigned_to: string;
+  };
 }
 
-const NewCaseModal: React.FC<NewCaseModalProps> = ({ open, onClose, onSave }) => {
+const NewCaseModal: React.FC<NewCaseModalProps> = ({
+  open,
+  onClose,
+  onSave,
+  defaultData,
+}) => {
   // Local state for the form fields
-  const [caseId, setCaseId] = useState('');
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
+  const [caseId, setCaseId] = useState(defaultData?.case_id || "");
+  const [title, setTitle] = useState(defaultData?.title || "");
+  const [description, setDescription] = useState(defaultData?.cdescription || "");
+  const [status, setStatus] = useState(defaultData?.cstatus || "");
+  const [assignedTo, setAssignedTo] = useState(defaultData?.assigned_to || "");
 
   const handleSave = () => {
     const newCase = {
@@ -36,13 +49,14 @@ const NewCaseModal: React.FC<NewCaseModalProps> = ({ open, onClose, onSave }) =>
       cstatus: status,
       assigned_to: assignedTo,
     };
-    onSave(newCase);
-    // Optionally clear fields after save:
-    setCaseId('');
-    setTitle('');
-    setDescription('');
-    setStatus('');
-    setAssignedTo('');
+    onSave
+      ? newCase
+      : // Optionally clear fields after save:
+        setCaseId("");
+    setTitle("");
+    setDescription("");
+    setStatus("");
+    setAssignedTo("");
   };
 
   return (
@@ -51,7 +65,7 @@ const NewCaseModal: React.FC<NewCaseModalProps> = ({ open, onClose, onSave }) =>
       <DialogContent>
         <TextField
           autoFocus
-          color='success'
+          color="success"
           margin="dense"
           label="Case ID"
           type="text"

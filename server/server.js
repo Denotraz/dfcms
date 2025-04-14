@@ -4,6 +4,22 @@ const cors = require("cors");
 const bcrypt = require("bcrypt"); // Ensure bcrypt is installed
 const jwt = require("jsonwebtoken");
 const app = express();
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "evidence/");
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}-${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key";
 
@@ -61,10 +77,10 @@ app.get("/api/cases", (req, res) => {
   });
 });
 
-app.post("/api/cases",verifyToken, (req, res) => {
+app.post("/api/cases", verifyToken, (req, res) => {
   const userRole = req.user.role;
 
-  if (userRole !== "investigator" && userRole !== "dba"){
+  if (userRole !== "investigator" && userRole !== "dba") {
     return res.status(403).json({ error: "Permission denied" });
   }
   // Destructure the fields that are expected from the request body.
@@ -89,6 +105,89 @@ app.post("/api/cases",verifyToken, (req, res) => {
         return res.status(500).json({ error: "Database error" });
       }
       res.json({ success: true, insertedId: results.insertId });
+    }
+  );
+});
+
+app.get("/api/evidence/:case_id", (req, res) => {
+  const case_id = req.params.case_id;
+
+  const query = "SELECT * FROM evidence WHERE case_id = ?";
+  connection.query(query, [case_id], (error, results) => {
+    if (error) {
+      console.error("Database error:", error);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
+});
+
+app.get("/api/verify-evidence/:case_id/:evidence_id", (req, res) => {
+  const { case_id, evidence_id } = req.params;
+
+  const query = `SELECT file_path, hash_value FROM evidence WHERE case_id = ? AND evidence_id = ?`;
+  connection.query(query, [case_id, evidence_id], (err, results) => {
+    if (err || results.length === 0) {
+      return res
+        .status(500)
+        .json({ error: "Database error or evidence not found" });
+    }
+
+    const { file_path, hash_value } = results[0];
+    try {
+      const fileBuffer = fs.readFileSync(file_path);
+      const currentHash = crypto
+        .createHash("sha256")
+        .update(fileBuffer)
+        .digest("hex");
+
+      if (currentHash === hash_value) {
+        res.json({ verified: true, message: "File is intact" });
+      } else {
+        res.json({ verified: false, message: "File has been altered" });
+      }
+    } catch (fileErr) {
+      res.status(500).json({ error: "Error reading file" });
+    }
+  });
+});
+
+app.post("/api/upload-evidence", upload.single("file"), async (req, res) => {
+  const { case_id, evidence_id, evidence_type, edescription, collected_by } =
+    req.body;
+  const file = req.file;
+
+  if (!file) return res.status(400).json({ error: "No file uploaded" });
+
+  const filePath = file.path;
+
+  // Generate hash
+  const fileBuffer = fs.readFileSync(filePath);
+  const hash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
+
+  // Insert into database
+  const query = `
+    INSERT INTO evidence (case_id, evidence_id, evidence_type, edescription, file_path, hash_value, collected_by, date_collected)
+    VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+  `;
+
+  connection.query(
+    query,
+    [
+      case_id,
+      evidence_id,
+      evidence_type,
+      edescription,
+      filePath,
+      hash,
+      collected_by,
+    ],
+    (err, results) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ success: true, message: "Evidence uploaded successfully" });
     }
   );
 });

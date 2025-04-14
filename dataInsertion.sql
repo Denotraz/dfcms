@@ -5,10 +5,10 @@ VALUES
     ('D001', 'Cyber Forensics Unit', '123 Digital St, NY', '555-1234'),
     ('D002', 'Data Recovery Lab', '456 Tech Ave, CA', '555-5678');
 
-INSERT INTO INVESTIGATOR (investigator_id, invname, email, phone, invrole, department_id)
+INSERT INTO INVESTIGATOR (investigator_id, invname, email, phone, invrole, department_id, password)
 VALUES
-    ('I001', 'Alice Johnson', 'alice@dfcms.com', '555-2345', 'investigator', 'D001'),
-    ('I002', 'Bob Smith', 'bob@dfcms.com', '555-6789', 'dba', 'D002');
+    ('I001', 'Alice Johnson', 'alice@dfcms.com', '555-2345', 'investigator', 'D001', '$2b$10$TQ6Mh1CJHWnrOWePIO4BeOrAT60csvfe.lVuwEGroAYFl4VgsZDQe'),
+    ('I002', 'Bob Smith', 'bob@dfcms.com', '555-6789', 'dba', 'D002', '$2b$10$IiDaFYLmpgL/Eg.CeIv3x.JMcNOyhuLBQpXQm1I6QZpSeFulacLfa');
 
 INSERT INTO CASES (case_id, title, cdescription, cstatus, date_created, last_updated, assigned_to)
 VALUES
@@ -22,7 +22,7 @@ VALUES
     ('E002', 'C002', 'video', 'Security footage of suspect accessing files.', '/evidence/footage.mp4', 'b7d9f2e1c3a4', 'I002', '2024-02-06');
 
 
-INSERT INTO CHAIN_OF_CUSTODY (chain_id, evidence_id, investigator_id, department_id, caction, date_time, notes)
+INSERT INTO CHAIN_OF_CUSTODY (chain_id, case_id, evidence_id, investigator_id, department_id, caction, date_time, notes)
 VALUES
-    ('CH001', 'E001', 'I001', 'D001', 'collected', '2024-02-02 10:30:00', 'Initial collection from server.'),
-    ('CH002', 'E002', 'I002', 'D002', 'transferred', '2024-02-06 14:15:00', 'Sent to forensic lab for analysis.');
+    ('CH001', 'C001', 'E001', 'I001', 'D001', 'collected', '2024-02-02 10:30:00', 'Initial collection from server.'),
+    ('CH002', 'C002', 'E002', 'I002', 'D002', 'transferred', '2024-02-06 14:15:00', 'Sent to forensic lab for analysis.');

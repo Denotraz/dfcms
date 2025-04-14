@@ -11,9 +11,10 @@ import { CaseData } from "../pages/Dashboard"; // Adjust path if needed
 
 interface BasicTableProps {
   rows: CaseData[];
+  onRowClick: (row: CaseData) => void;
 }
 
-const BasicTable: React.FC<BasicTableProps> = ({ rows }) => {
+const BasicTable: React.FC<BasicTableProps> = ({ rows, onRowClick }) => {
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -68,7 +69,11 @@ const BasicTable: React.FC<BasicTableProps> = ({ rows }) => {
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow key={row.case_id}>
+            <TableRow 
+                key={row.case_id} 
+                onClick={() => onRowClick && onRowClick(row)}
+                style={{ cursor:'pointer'}}
+              >
               <TableCell
                 component="th"
                 scope="row"

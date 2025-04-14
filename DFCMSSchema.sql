@@ -14,6 +14,7 @@ CREATE TABLE INVESTIGATOR
     phone varchar(255) NOT NULL,
     invrole enum('guest', 'investigator', 'dba') NOT NULL,
     department_id varchar(10) NOT NULL,
+    password varchar(255) NOT NULL,
     FOREIGN KEY(department_id) REFERENCES departments(department_id)
 );
 
@@ -30,31 +31,30 @@ CREATE TABLE CASES
 	FOREIGN KEY(assigned_to) REFERENCES investigator(investigator_id)
 );
 
-CREATE TABLE EVIDENCE
-(
-	evidence_id varchar(10) PRIMARY KEY,
-    case_id varchar(10) NOT NULL,
-    evidence_type enum('txt','video','audio','other') NOT NULL,
-    edescription text,
-    file_path varchar(255) NOT NULL,
-    hash_value varchar(255) NOT NULL,
-    collected_by varchar(10) NOT NULL,
-    date_collected date NOT NULL,
-    FOREIGN KEY(collected_by) REFERENCES investigator(investigator_id)
+CREATE TABLE evidence (
+    case_id VARCHAR(10) NOT NULL,
+    evidence_id VARCHAR(10) NOT NULL,
+    evidence_type ENUM('txt', 'img', 'video', 'audio', 'other'),
+    edescription TEXT,
+    file_path VARCHAR(255),
+    hash_value VARCHAR(255),
+    collected_by VARCHAR(10),
+    date_collected DATE,
+    PRIMARY KEY (case_id, evidence_id),
+    FOREIGN KEY (case_id) REFERENCES cases(case_id)
 );
 
-CREATE TABLE CHAIN_OF_CUSTODY
-(
-	chain_id varchar(10) PRIMARY KEY,
-    evidence_id varchar(10) NOT NULL,
-    investigator_id varchar(10) NOT NULL,
-    department_id varchar(10) NOT NULL,
-    caction enum('collected', 'transferred', 'stored', 'analyzed', 'released') NOT NULL,
-    date_time datetime NOT NULL,
-    notes text,
-    FOREIGN KEY(evidence_id) REFERENCES evidence(evidence_id),
-	FOREIGN KEY(investigator_id) REFERENCES investigator(investigator_id),
-    FOREIGN KEY(department_id) REFERENCES departments(department_id)
+CREATE TABLE CHAIN_OF_CUSTODY (
+    chain_id VARCHAR(10) PRIMARY KEY,
+    case_id VARCHAR(10) NOT NULL,
+    evidence_id VARCHAR(10) NOT NULL,
+    investigator_id VARCHAR(10) NOT NULL,
+    department_id VARCHAR(10) NOT NULL,
+    caction ENUM('collected', 'transferred', 'stored', 'analyzed', 'released') NOT NULL,
+    date_time DATETIME NOT NULL,
+    notes TEXT,
+    FOREIGN KEY (case_id, evidence_id) REFERENCES evidence(case_id, evidence_id),
+    FOREIGN KEY (investigator_id) REFERENCES investigator(investigator_id),
+    FOREIGN KEY (department_id) REFERENCES departments(department_id)
 );
-
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 import logo from "../assets/images/DFCMS.png";
@@ -8,6 +8,11 @@ const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+
+  useEffect(() => {
+    document.title = "DFCMS / Login";
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();

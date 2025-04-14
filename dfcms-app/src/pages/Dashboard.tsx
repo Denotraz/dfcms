@@ -8,6 +8,7 @@ import NewCaseModal from "../components/NewCaseModal";
 import AddIcon from "@mui/icons-material/Add";
 import BasicButtons from "../components/LogoutButton";
 import { logout } from "../utils/auth";
+import EvidenceModal from "../components/CaseDetailModal";
 
 // Define an interface for your case data
 export interface CaseData {
@@ -28,6 +29,18 @@ const Dashboard: React.FC = () => {
   const drawerWidth = 240;
   const [modalOpen, setModalOpen] = useState(false);
   const [cases, setCases] = useState<CaseData[]>([]);
+  const [selectedCase, setSelectedCase] = useState<CaseData | null>(null);
+  const [evidenceModalOpen, setEvidenceModalOpen] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      document.title = ` DFCMS / Dashboard / ${parsedUser.role.charAt(0).toUpperCase() + parsedUser.role.slice(1)}`;
+    } else {
+      document.title = "DFCMS / Dashboard / Guest";
+    }
+  }, []);
 
   // Function to fetch cases from the API
   const fetchCases = async () => {
@@ -39,6 +52,11 @@ const Dashboard: React.FC = () => {
       console.error("Error fetching cases:", error);
     }
   };
+
+  const handleCaseRowClick = (caseItem: CaseData) => {
+    setSelectedCase(caseItem);
+    setEvidenceModalOpen(true);
+  }
 
   // Fetch cases when the component mounts
   useEffect(() => {
@@ -121,6 +139,7 @@ const Dashboard: React.FC = () => {
           <h1>Welcome, {userName}</h1>
         </div>
         {/* Floating Action Button to open the new case modal */}
+        {(userRole == 'investigator' || userRole == 'dba') && (
         <Fab
           color="secondary"
           aria-label="add"
@@ -129,14 +148,21 @@ const Dashboard: React.FC = () => {
         >
           <AddIcon />
         </Fab>
+        )}
         <div className="table-container">
           {/* Pass the fetched cases to your table component */}
-          <BasicTable rows={cases} />
+          <BasicTable rows={cases} onRowClick={handleCaseRowClick} />
         </div>
         <NewCaseModal
           open={modalOpen}
           onClose={handleCloseModal}
           onSave={handleSaveNewCase}
+        />
+        <EvidenceModal
+          open={evidenceModalOpen}
+          onClose={() => setEvidenceModalOpen(false)}
+          selectedCase={selectedCase}
+          userRole = {userRole}
         />
       </Box>
     </Box>
