@@ -102,6 +102,8 @@ const Dashboard: React.FC = () => {
         body: JSON.stringify(newCase),
       });
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Server responded with:", errorData);
         throw new Error("Failed to create case");
       }
       // Re-fetch cases after successful insertion

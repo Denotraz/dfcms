@@ -37,7 +37,9 @@ const NewCaseModal: React.FC<NewCaseModalProps> = ({
   // Local state for the form fields
   const [caseId, setCaseId] = useState(defaultData?.case_id || "");
   const [title, setTitle] = useState(defaultData?.title || "");
-  const [description, setDescription] = useState(defaultData?.cdescription || "");
+  const [description, setDescription] = useState(
+    defaultData?.cdescription || ""
+  );
   const [status, setStatus] = useState(defaultData?.cstatus || "");
   const [assignedTo, setAssignedTo] = useState(defaultData?.assigned_to || "");
 
@@ -49,10 +51,13 @@ const NewCaseModal: React.FC<NewCaseModalProps> = ({
       cstatus: status,
       assigned_to: assignedTo,
     };
-    onSave
-      ? newCase
-      : // Optionally clear fields after save:
-        setCaseId("");
+
+    if (onSave) {
+      onSave(newCase);
+    }
+
+    // Optionally clear fields after save:
+    setCaseId("");
     setTitle("");
     setDescription("");
     setStatus("");

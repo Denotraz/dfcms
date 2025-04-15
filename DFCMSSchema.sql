@@ -50,7 +50,7 @@ CREATE TABLE CHAIN_OF_CUSTODY (
     evidence_id VARCHAR(10) NOT NULL,
     investigator_id VARCHAR(10) NOT NULL,
     department_id VARCHAR(10) NOT NULL,
-    caction ENUM('collected', 'transferred', 'stored', 'analyzed', 'released') NOT NULL,
+    caction ENUM('collected', 'transferred', 'stored','released') NOT NULL,
     date_time DATETIME NOT NULL,
     notes TEXT,
     FOREIGN KEY (case_id, evidence_id) REFERENCES evidence(case_id, evidence_id),

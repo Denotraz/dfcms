@@ -78,6 +78,7 @@ app.get("/api/cases", (req, res) => {
 });
 
 app.post("/api/cases", verifyToken, (req, res) => {
+  console.log("Decoded JWT:", req.user);
   const userRole = req.user.role;
 
   if (userRole !== "investigator" && userRole !== "dba") {
@@ -142,7 +143,6 @@ app.get('/api/verify-evidence/:case_id/:evidence_id', (req, res) => {
 
     const { file_path, hash_value } = results[0];
 
-    // Recalculate hash
     try {
       const fileBuffer = fs.readFileSync(file_path);
       const currentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
