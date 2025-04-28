@@ -4,13 +4,14 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
-import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/Cases";
 import MailIcon from "@mui/icons-material/AdminPanelSettings";
+import { useNavigate } from "react-router-dom";
+import MenuIcon from "@mui/icons-material/Menu";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
@@ -21,6 +22,17 @@ export default function AnchorTemporaryDrawer() {
     bottom: false,
     right: false,
   });
+
+  const navigate = useNavigate();
+  const [userRole, setUserRole] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUserRole(parsedUser.role);
+    }
+  }, []);
 
   const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
@@ -49,27 +61,27 @@ export default function AnchorTemporaryDrawer() {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {["Cases", "Admin"].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                if (text === "Cases") {
-                  window.location.href = "/dashboard"; // Redirect to the dashboard page
-                }
-              }}
-            >
+        {/* Always show "Cases" */}
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => navigate("/dashboard")}>
+            <ListItemIcon>
+              <InboxIcon sx={{ color: "#fff" }} />
+            </ListItemIcon>
+            <ListItemText primary="Cases" sx={{ color: "#fff" }} />
+          </ListItemButton>
+        </ListItem>
+
+        {/* Only show "Admin" if user is a DBA */}
+        {userRole === "dba" && (
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => navigate("/admin")}>
               <ListItemIcon>
-                {index % 2 === 0 ? (
-                  <InboxIcon sx={{ color: "#fff" }} /> // Light icon color
-                ) : (
-                  <MailIcon sx={{ color: "#fff" }} /> // Light icon color
-                )}
+                <MailIcon sx={{ color: "#fff" }} />
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ color: "#fff" }} />{" "}
-              {/* Light text color */}
+              <ListItemText primary="Admin" sx={{ color: "#fff" }} />
             </ListItemButton>
           </ListItem>
-        ))}
+        )}
       </List>
     </Box>
   );
@@ -79,7 +91,7 @@ export default function AnchorTemporaryDrawer() {
       {(["left"] as const).map((anchor) => (
         <React.Fragment key={anchor}>
           <Button className="button" onClick={toggleDrawer(anchor, true)}>
-            {anchor}
+            <MenuIcon />
           </Button>
           <Drawer
             anchor={anchor}

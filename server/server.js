@@ -51,6 +51,58 @@ function verifyToken(req, res, next) {
   });
 }
 
+app.post("/api/create-investigator", verifyToken, (req, res) => {
+  const userRole = req.user.role;
+  if (userRole !== "dba") {
+    return res.status(403).json({ error: "Permission denied" });
+  }
+
+  const {
+    investigator_id,
+    invname,
+    email,
+    phone,
+    invrole,
+    department_id,
+    password,
+  } = req.body;
+
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) {
+      console.error("Bcrypt error:", err);
+      return res.status(500).json({ error: "Error hashing password" });
+    }
+
+    const query = `
+      INSERT INTO investigator (investigator_id, invname, email, phone, invrole, department_id, password)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    connection.query(
+      query,
+      [investigator_id, invname, email, phone, invrole, department_id, hash],
+      (error, results) => {
+        if (error) {
+          console.error("Database error:", error);
+          return res.status(500).json({ error: "Database error" });
+        }
+        res.json({ success: true });
+      }
+    );
+  });
+});
+
+app.get("/api/departments", (req, res) => {
+  const query = "SELECT department_id, department_name FROM departments";
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error("Database error:", error);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  })
+})
+
 app.get("/api/test-db", (req, res) => {
   connection.query("SELECT 1 AS test", (error, results) => {
     if (error) {
@@ -123,7 +175,7 @@ app.get("/api/evidence/:case_id", (req, res) => {
   });
 });
 
-app.get('/api/verify-evidence/:case_id/:evidence_id', (req, res) => {
+app.get("/api/verify-evidence/:case_id/:evidence_id", (req, res) => {
   const { case_id, evidence_id } = req.params;
 
   const query = `
@@ -145,14 +197,19 @@ app.get('/api/verify-evidence/:case_id/:evidence_id', (req, res) => {
 
     try {
       const fileBuffer = fs.readFileSync(file_path);
-      const currentHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
+      const currentHash = crypto
+        .createHash("sha256")
+        .update(fileBuffer)
+        .digest("hex");
 
       const isMatch = currentHash === hash_value;
       return res.json({
         match: isMatch,
         storedHash: hash_value,
         currentHash,
-        message: isMatch ? "Evidence is intact." : "WARNING: Evidence may have been tampered with!",
+        message: isMatch
+          ? "Evidence is intact."
+          : "WARNING: Evidence may have been tampered with!",
       });
     } catch (fileErr) {
       console.error("File read error:", fileErr);
