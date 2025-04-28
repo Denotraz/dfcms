@@ -21,6 +21,7 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Checkbox,
 } from "@mui/material";
 import { CaseData } from "../pages/Dashboard";
 
@@ -55,6 +56,11 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [evidenceId, setEvidenceId] = useState("");
 
+  // 🔵 NEW STATES
+  const [selectedEvidence, setSelectedEvidence] = useState<Evidence | null>(
+    null
+  );
+  const [verified, setVerified] = useState(false);
 
   const fetchEvidence = async () => {
     if (selectedCase) {
@@ -117,6 +123,41 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
     }
   };
 
+  const handleVerifyEvidence = async () => {
+    if (!selectedCase || !selectedEvidence) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:3001/api/verify-evidence/${selectedCase.case_id}/${selectedEvidence.evidence_id}`
+      );
+      const data = await res.json();
+
+      if (data.match) {
+        alert("Evidence integrity verified!");
+        setVerified(true);
+      } else {
+        alert("WARNING: Evidence has been tampered with!");
+        setVerified(false);
+      }
+    } catch (err) {
+      console.error("Error verifying evidence:", err);
+      alert("Error verifying evidence.");
+    }
+  };
+
+  const handleDownloadEvidence = () => {
+    if (!selectedEvidence) return;
+
+    let filename = selectedEvidence.file_path;
+    if (filename.startsWith("evidence/")) {
+      filename = filename.replace("evidence/", "");
+    }
+
+    const viewUrl = `http://localhost:3001/${filename}`;
+
+    window.open(viewUrl, "_blank");
+  };
+
   if (!selectedCase) return null;
 
   return (
@@ -136,14 +177,7 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
         </Typography>
 
         {loading ? (
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            sx={{ mt: 3 }}
-          >
-            <CircularProgress />
-          </Box>
+          <CircularProgress />
         ) : evidence.length === 0 ? (
           <Typography>No evidence found.</Typography>
         ) : (
@@ -151,6 +185,7 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
             <Table>
               <TableHead>
                 <TableRow>
+                  <TableCell />
                   <TableCell>Evidence ID</TableCell>
                   <TableCell>File Path</TableCell>
                   <TableCell>Hash</TableCell>
@@ -160,7 +195,38 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
               </TableHead>
               <TableBody>
                 {evidence.map((item) => (
-                  <TableRow key={item.evidence_id}>
+                  <TableRow
+                    key={item.evidence_id}
+                    selected={
+                      selectedEvidence?.evidence_id === item.evidence_id
+                    }
+                    onClick={() => {
+                      setSelectedEvidence(item);
+                      setVerified(false);
+                    }}
+                    sx={{
+                      "&.Mui-selected": {
+                        backgroundColor: "#006d77",
+                      },
+                      "&.Mui-selected:hover": {
+                        backgroundColor: "#005b66",
+                      },
+                      cursor: "pointer",
+                    }}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={
+                          selectedEvidence?.evidence_id === item.evidence_id
+                        }
+                        onChange={() => {
+                          setSelectedEvidence(item);
+                          setVerified(false);
+                        }}
+                        color="primary"
+                      />
+                    </TableCell>
+
                     <TableCell>{item.evidence_id}</TableCell>
                     <TableCell>{item.file_path}</TableCell>
                     <TableCell>{item.hash_value}</TableCell>
@@ -175,7 +241,6 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
           </TableContainer>
         )}
 
-        {/* 📄 Upload form */}
         {showUploadForm && (
           <Box component="form" onSubmit={handleUpload} sx={{ mt: 2 }}>
             <TextField
@@ -224,7 +289,6 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
           </Box>
         )}
       </DialogContent>
-
       <DialogActions className="custom-dialog-actions">
         {(userRole === "investigator" || userRole === "dba") && (
           <Button
@@ -235,6 +299,30 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
             Add Evidence
           </Button>
         )}
+
+        {/* 🔵 NEW: Buttons for selected evidence */}
+        {selectedEvidence && (
+          <>
+            <Button
+              onClick={handleVerifyEvidence}
+              color="info"
+              variant="contained"
+            >
+              Verify & Release
+            </Button>
+
+            {verified && (
+              <Button
+                onClick={handleDownloadEvidence}
+                color="success"
+                variant="contained"
+              >
+                Download
+              </Button>
+            )}
+          </>
+        )}
+
         <Button onClick={onClose} color="secondary">
           Close
         </Button>

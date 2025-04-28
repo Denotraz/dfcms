@@ -1,52 +1,77 @@
+/* CaseDetailModal.css */
+
 .custom-dialog {
-    background-color: #0e3d4f;
+    background-color: #0d1117;
   }
   
   .custom-dialog-title {
-    background-color: #145d6b;
-    color: white !important;
-    font-weight: bold;
-    font-size: 1.5rem;
-    text-align: center;
+    background-color: #0d1117;
+    color: #ffffff !important;
   }
   
   .custom-dialog-content {
-    background-color: #1e1e1e;
-    padding: 2rem;
-    color: white !important;
+    background-color: #0d1117;
+    color: #ffffff !important;
   }
   
   .custom-dialog-actions {
-    background-color: #1e1e1e;
+    background-color: #0d1117;
+    display: flex;
+    justify-content: space-between;
     padding: 1rem;
   }
   
-  .custom-textfield label {
-    color: #ccc;
-  }
-  
-  .custom-textfield input {
-    color: white !important;
-    background-color: #333 !important;
-    border: 1px solid #555 !important;
-    padding: 10px;
-  }
-  
-  .custom-form-control label {
-    color: #ccc;
-  }
-  
-  .custom-form-control .MuiInputBase-root {
-    color: white !important;
-    background-color: #333;
+  /* Table Styles */
+  .MuiTable-root {
+    background-color: #121212;
   }
   
   .MuiTableCell-root {
-    background-color: #2a2a2a;
-    color: white !important;
+    color: #ffffff !important;
+    background-color: #1a1a1d;
   }
   
-  .MuiTableRow-root:hover {
-    background-color: #295f73 !important;
+  .MuiTableHead-root .MuiTableCell-root {
+    background-color: #006d77;
+    font-weight: bold;
+    color: #ffffff !important;
+  }
+  
+  /* Buttons */
+  .MuiButton-root {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+  
+  .MuiButton-containedPrimary {
+    background-color: #006d77;
+  }
+  
+  .MuiButton-containedPrimary:hover {
+    background-color: #005962;
+  }
+  
+  .MuiButton-containedInfo {
+    background-color: #0077b6;
+  }
+  
+  .MuiButton-containedInfo:hover {
+    background-color: #005f86;
+  }
+  
+  .MuiButton-containedSuccess {
+    background-color: #00c853;
+  }
+  
+  .MuiButton-containedSuccess:hover {
+    background-color: #009624;
+  }
+  
+  .MuiButton-containedSecondary {
+    background-color: #8e24aa;
+  }
+  
+  .MuiButton-containedSecondary:hover {
+    background-color: #6a0080;
   }
   

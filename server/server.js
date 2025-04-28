@@ -28,6 +28,9 @@ app.use(cors());
 // Enable JSON body parsing
 app.use(express.json());
 
+// serve evidence files properly:
+app.use("/evidence", express.static(path.join(__dirname, "evidence")));
+
 // Create a MySQL connection
 const connection = mysql.createConnection({
   host: "localhost",
@@ -50,6 +53,18 @@ function verifyToken(req, res, next) {
     next();
   });
 }
+
+app.get("/download-evidence/:filename", (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(__dirname, filename);
+
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error("Download error:", err);
+      res.status(404).send("File not found");
+    }
+  });
+});
 
 app.post("/api/create-investigator", verifyToken, (req, res) => {
   const userRole = req.user.role;
@@ -244,73 +259,93 @@ app.get("/api/verify-evidence/:case_id/:evidence_id", (req, res) => {
   });
 });
 
-app.post("/api/upload-evidence", verifyToken, upload.single("file"), async (req, res) => {
-  const { case_id, evidence_id, evidence_type, edescription } = req.body;
-  const file = req.file;
+app.post(
+  "/api/upload-evidence",
+  verifyToken,
+  upload.single("file"),
+  async (req, res) => {
+    const { case_id, evidence_id, evidence_type, edescription } = req.body;
+    const file = req.file;
 
-  if (!file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
+    if (!file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
 
-  const filePath = file.path;
-  const collected_by = req.user.id; // From JWT
-  const department_id = req.user.department_id; // From JWT
+    const filePath = file.path;
+    const collected_by = req.user.id; // From JWT
+    const department_id = req.user.department_id; // From JWT
 
-  try {
-    // Generate hash
-    const fileBuffer = fs.readFileSync(filePath);
-    const hash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
+    try {
+      // Generate hash
+      const fileBuffer = fs.readFileSync(filePath);
+      const hash = crypto.createHash("sha256").update(fileBuffer).digest("hex");
 
-    // Insert into Evidence table
-    const evidenceQuery = `
+      // Insert into Evidence table
+      const evidenceQuery = `
       INSERT INTO evidence (case_id, evidence_id, evidence_type, edescription, file_path, hash_value, collected_by, date_collected)
       VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     `;
 
-    await new Promise((resolve, reject) => {
-      connection.query(
-        evidenceQuery,
-        [case_id, evidence_id, evidence_type, edescription, filePath, hash, collected_by],
-        (error, results) => {
-          if (error) {
-            console.error("Error inserting into evidence:", error);
-            reject(error);
-          } else {
-            resolve(results);
+      await new Promise((resolve, reject) => {
+        connection.query(
+          evidenceQuery,
+          [
+            case_id,
+            evidence_id,
+            evidence_type,
+            edescription,
+            filePath,
+            hash,
+            collected_by,
+          ],
+          (error, results) => {
+            if (error) {
+              console.error("Error inserting into evidence:", error);
+              reject(error);
+            } else {
+              resolve(results);
+            }
           }
-        }
-      );
-    });
+        );
+      });
 
-    // Insert into Chain of Custody (chain_id auto handled)
-    const custodyQuery = `
+      // Insert into Chain of Custody (chain_id auto handled)
+      const custodyQuery = `
       INSERT INTO chain_of_custody (case_id, evidence_id, investigator_id, department_id, caction, date_time, notes)
       VALUES (?, ?, ?, ?, 'collected', NOW(), ?)
     `;
 
-    await new Promise((resolve, reject) => {
-      connection.query(
-        custodyQuery,
-        [case_id, evidence_id, collected_by, department_id, "Initial evidence collection."],
-        (error, results) => {
-          if (error) {
-            console.error("Error inserting into chain of custody:", error);
-            reject(error);
-          } else {
-            resolve(results);
+      await new Promise((resolve, reject) => {
+        connection.query(
+          custodyQuery,
+          [
+            case_id,
+            evidence_id,
+            collected_by,
+            department_id,
+            "Initial evidence collection.",
+          ],
+          (error, results) => {
+            if (error) {
+              console.error("Error inserting into chain of custody:", error);
+              reject(error);
+            } else {
+              resolve(results);
+            }
           }
-        }
-      );
-    });
+        );
+      });
 
-    res.json({ success: true, message: "Evidence and chain of custody recorded successfully." });
-
-  } catch (err) {
-    console.error("Unexpected error:", err);
-    res.status(500).json({ error: "Server error during evidence upload." });
+      res.json({
+        success: true,
+        message: "Evidence and chain of custody recorded successfully.",
+      });
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      res.status(500).json({ error: "Server error during evidence upload." });
+    }
   }
-});
-
+);
 
 // Login endpoint using bcrypt for password comparison
 app.post("/api/login", (req, res) => {
