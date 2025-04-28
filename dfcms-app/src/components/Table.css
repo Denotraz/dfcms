@@ -1,5 +1,34 @@
-.table-container{
-    background-color:#0b0e13;
-    padding: 1rem;
+.custom-table-container {
+    background-color: #0e3d4f; /* Dark Teal */
     border-radius: 8px;
-}
+    overflow: hidden;
+  }
+  
+  .custom-table-head {
+    background-color: #145d6b;
+    color: white;
+  }
+  
+  .custom-table-head th {
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    background-color: #145d6b;
+  }
+  
+  .custom-table-row {
+    background-color: #1e1e1e;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .custom-table-row:hover {
+    background-color: #295f73; /* Lighter teal on hover */
+  }
+  
+  .custom-table-row td {
+    color: white;
+    font-size: 0.95rem;
+  }
+  

@@ -1,15 +1,34 @@
 .box {
     display: flex;
     height: 100vh;
-}
-
-.logo-container {
-    background-color: #1e1e1e;
-    color: #ffffff;
+    background-color: #0d1117; /* Dark teal background */
+  }
+  
+  .logo-container {
+    background-color: #145d6b;
+    color: white;
     padding: 30px;
+    margin-bottom: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     font-size: 2rem;
     font-weight: 300;
-}
-
+    text-align: center;
+  }
+  
+  .table-container {
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  h1 {
+    font-weight: 300;
+    font-size: 2rem;
+    color: white;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  

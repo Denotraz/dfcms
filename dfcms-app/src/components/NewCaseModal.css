@@ -4,7 +4,7 @@
   
   .custom-dialog-title {
     background-color: #145d6b;
-    color: white !important;
+    color: white;
     font-weight: bold;
     font-size: 1.5rem;
     text-align: center;
@@ -13,7 +13,6 @@
   .custom-dialog-content {
     background-color: #1e1e1e;
     padding: 2rem;
-    color: white !important;
   }
   
   .custom-dialog-actions {
@@ -32,21 +31,11 @@
     padding: 10px;
   }
   
-  .custom-form-control label {
-    color: #ccc;
+  .custom-textfield .MuiInput-underline:before {
+    border-bottom: 1px solid #777;
   }
   
-  .custom-form-control .MuiInputBase-root {
-    color: white !important;
-    background-color: #333;
-  }
-  
-  .MuiTableCell-root {
-    background-color: #2a2a2a;
-    color: white !important;
-  }
-  
-  .MuiTableRow-root:hover {
-    background-color: #295f73 !important;
+  .custom-textfield .MuiInput-underline:hover:before {
+    border-bottom: 1px solid white;
   }
   

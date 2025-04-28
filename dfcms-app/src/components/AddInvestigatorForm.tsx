@@ -1,155 +1,115 @@
-// src/components/AddInvestigatorForm.tsx
-
-import React, { useState, useEffect } from "react";
-import { TextField, Button, Box, Typography, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
+import React, { useState } from "react";
+import "./AddInvestigatorForm.css";
 
 interface Department {
   department_id: string;
-  department_name: string;
 }
 
-const AddInvestigatorForm: React.FC = () => {
-  const [investigatorId, setInvestigatorId] = useState("");
-  const [invName, setInvName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [department, setDepartment] = useState("");
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [password, setPassword] = useState("");
-  const [invRole, setInvRole] = useState("investigator"); // default
-  const [error, setError] = useState("");
+interface AddInvestigatorFormProps {
+  departments: Department[];
+  onSubmit: (formData: {
+    investigator_id: string;
+    invname: string;
+    email: string;
+    phone: string;
+    department_id: string;
+    password: string;
+    invrole: string;
+  }) => void;
+}
 
-  useEffect(() => {
-    // Fetch department list when the form loads
-    const fetchDepartments = async () => {
-      try {
-        const res = await fetch("http://localhost:3001/api/departments");
-        const data = await res.json();
-        setDepartments(data);
-      } catch (err) {
-        console.error("Error fetching departments:", err);
-      }
-    };
+const AddInvestigatorForm: React.FC<AddInvestigatorFormProps> = ({
+  departments,
+  onSubmit,
+}) => {
+  const [formData, setFormData] = useState({
+    investigator_id: "",
+    invname: "",
+    email: "",
+    phone: "",
+    department_id: "",
+    password: "",
+    invrole: "investigator",
+  });
 
-    fetchDepartments();
-  }, []);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        "http://localhost:3001/api/create-investigator",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            investigator_id: investigatorId,
-            invname: invName,
-            email,
-            phone,
-            department_id: department,
-            password,
-            invrole: invRole,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to create investigator.");
-      }
-
-      alert("Investigator created successfully!");
-      // Reset fields
-      setInvestigatorId("");
-      setInvName("");
-      setEmail("");
-      setPhone("");
-      setDepartment("");
-      setPassword("");
-      setInvRole("investigator");
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Error occurred");
-    }
+    onSubmit(formData);
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: 500 }}
-    >
-      {error && <Typography color="error">{error}</Typography>}
-
-      <TextField
-        label="Investigator ID"
-        value={investigatorId}
-        onChange={(e) => setInvestigatorId(e.target.value)}
-        required
+    <form className="add-investigator-form" onSubmit={handleSubmit}>
+      <h6>Create New Investigator</h6>
+      <input
+        className="add-investigator-field"
+        type="text"
+        name="investigator_id"
+        placeholder="Investigator ID"
+        value={formData.investigator_id}
+        onChange={handleChange}
       />
-      <TextField
-        label="Name"
-        value={invName}
-        onChange={(e) => setInvName(e.target.value)}
-        required
+      <input
+        className="add-investigator-field"
+        type="text"
+        name="invname"
+        placeholder="Name"
+        value={formData.invname}
+        onChange={handleChange}
       />
-      <TextField
-        label="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
+      <input
+        className="add-investigator-field"
         type="email"
+        name="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
       />
-      <TextField
-        label="Phone"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
+      <input
+        className="add-investigator-field"
+        type="text"
+        name="phone"
+        placeholder="Phone"
+        value={formData.phone}
+        onChange={handleChange}
       />
-
-      {/* Department Select */}
-      <FormControl fullWidth required>
-        <InputLabel id="department-select-label">Department</InputLabel>
-        <Select
-          labelId="department-select-label"
-          value={department}
-          label="Department"
-          onChange={(e) => setDepartment(e.target.value)}
-        >
-          {departments.map((dept) => (
-            <MenuItem key={dept.department_id} value={dept.department_id}>
-              {dept.department_name} ({dept.department_id})
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <TextField
-        label="Password"
-        value={password}
+      <select
+        className="add-investigator-field"
+        name="department_id"
+        value={formData.department_id}
+        onChange={handleChange}
+      >
+        <option value="">Select Department</option>
+        {departments.map((dep) => (
+          <option key={dep.department_id} value={dep.department_id}>
+            {dep.department_id}
+          </option>
+        ))}
+      </select>
+      <input
+        className="add-investigator-field"
         type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        required
+        name="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
       />
-      <TextField
-        label="Role"
-        value={invRole}
-        onChange={(e) => setInvRole(e.target.value)}
-        helperText="Enter 'investigator' or 'dba'"
-        required
-      />
-
-      <Button type="submit" variant="contained" color="primary">
+      <select
+        className="add-investigator-field"
+        name="invrole"
+        value={formData.invrole}
+        onChange={handleChange}
+      >
+        <option value="investigator">Investigator</option>
+        <option value="dba">DBA</option>
+      </select>
+      <button type="submit" className="add-investigator-button">
         Create Investigator
-      </Button>
-    </Box>
+      </button>
+    </form>
   );
 };
 

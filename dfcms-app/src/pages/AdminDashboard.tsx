@@ -1,17 +1,14 @@
-// src/pages/AdminDashboard.tsx
-
-import React, { useEffect } from "react";
-import { Box, Toolbar, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
-import BasicButtons from "../components/LogoutButton";
-import { logout } from "../utils/auth";
 import AddInvestigatorForm from "../components/AddInvestigatorForm";
 import "./Dashboard.css";
 
 const AdminDashboard: React.FC = () => {
-  const drawerWidth = 240;
   const navigate = useNavigate();
+  const drawerWidth = 240;
+  const [departments, setDepartments] = useState<{ department_id: string }[]>([]);
 
   useEffect(() => {
     const user = localStorage.getItem("user");
@@ -24,8 +21,39 @@ const AdminDashboard: React.FC = () => {
       navigate("/");
     }
 
+    fetchDepartments();
     document.title = "DFCMS / Admin Dashboard";
   }, []);
+
+  const fetchDepartments = async () => {
+    const res = await fetch("http://localhost:3001/api/departments");
+    const data = await res.json();
+    setDepartments(data);
+  };
+
+  const handleCreateInvestigator = async (formData: any) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:3001/api/create-investigator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create investigator.");
+      }
+
+      alert("Investigator created successfully!");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error occurred");
+    }
+  };
 
   return (
     <Box className="box" sx={{ display: "flex" }}>
@@ -38,29 +66,11 @@ const AdminDashboard: React.FC = () => {
           width: `calc(100% - ${drawerWidth}px)`,
         }}
       >
-        <Toolbar />
-        <div
-          className="logo-container"
-          style={{ position: "absolute", top: 16, right: 16 }}
-        >
-          <BasicButtons
-            onClick={() => {
-              logout();
-              window.location.href = "/";
-            }}
-          />
-        </div>
-
         <Typography variant="h4" gutterBottom>
           Admin Dashboard
         </Typography>
 
-        <Typography variant="h6" gutterBottom>
-          Create New Investigator
-        </Typography>
-
-        {/* Insert the new component here */}
-        <AddInvestigatorForm />
+        <AddInvestigatorForm departments={departments} onSubmit={handleCreateInvestigator} />
       </Box>
     </Box>
   );

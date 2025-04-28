@@ -4,35 +4,24 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/Cases";
-import MailIcon from "@mui/icons-material/AdminPanelSettings";
-import { useNavigate } from "react-router-dom";
+import CasesIcon from "@mui/icons-material/Cases";
+import AdminIcon from "@mui/icons-material/AdminPanelSettings";
 import MenuIcon from "@mui/icons-material/Menu";
 
 type Anchor = "top" | "left" | "bottom" | "right";
 
-export default function AnchorTemporaryDrawer() {
+const Sidebar: React.FC = () => {
   const [state, setState] = React.useState({
     top: false,
     left: false,
     bottom: false,
     right: false,
   });
-
-  const navigate = useNavigate();
-  const [userRole, setUserRole] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUserRole(parsedUser.role);
-    }
-  }, []);
 
   const toggleDrawer =
     (anchor: Anchor, open: boolean) =>
@@ -48,41 +37,31 @@ export default function AnchorTemporaryDrawer() {
       setState({ ...state, [anchor]: open });
     };
 
+  const navItems = [
+    { text: "Cases", icon: <CasesIcon />, path: "/dashboard" },
+    { text: "Admin", icon: <AdminIcon />, path: "/admin" },
+  ];
+
   const list = (anchor: Anchor) => (
     <Box
       sx={{
         width: anchor === "top" || anchor === "bottom" ? "auto" : 250,
-        backgroundColor: "#333", // Dark background color
-        color: "#fff", // Light text color
-        height: "100%", // Ensure it covers the full height
       }}
       role="presentation"
       onClick={toggleDrawer(anchor, false)}
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        {/* Always show "Cases" */}
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => navigate("/dashboard")}>
-            <ListItemIcon>
-              <InboxIcon sx={{ color: "#fff" }} />
-            </ListItemIcon>
-            <ListItemText primary="Cases" sx={{ color: "#fff" }} />
-          </ListItemButton>
-        </ListItem>
-
-        {/* Only show "Admin" if user is a DBA */}
-        {userRole === "dba" && (
-          <ListItem disablePadding>
-            <ListItemButton onClick={() => navigate("/admin")}>
-              <ListItemIcon>
-                <MailIcon sx={{ color: "#fff" }} />
-              </ListItemIcon>
-              <ListItemText primary="Admin" sx={{ color: "#fff" }} />
+        {navItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton onClick={() => (window.location.href = item.path)}>
+              <ListItemIcon sx={{ color: "#fff" }}>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} sx={{ color: "#fff" }} />
             </ListItemButton>
           </ListItem>
-        )}
+        ))}
       </List>
+      <Divider />
     </Box>
   );
 
@@ -91,7 +70,7 @@ export default function AnchorTemporaryDrawer() {
       {(["left"] as const).map((anchor) => (
         <React.Fragment key={anchor}>
           <Button className="button" onClick={toggleDrawer(anchor, true)}>
-            <MenuIcon />
+          <MenuIcon sx={{ color: "#ffffff" }} />
           </Button>
           <Drawer
             anchor={anchor}
@@ -104,4 +83,6 @@ export default function AnchorTemporaryDrawer() {
       ))}
     </div>
   );
-}
+};
+
+export default Sidebar;

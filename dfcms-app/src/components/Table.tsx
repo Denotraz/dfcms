@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { CaseData } from "../pages/Dashboard"; // Adjust path if needed
+import { CaseData } from "../pages/Dashboard";
 
 interface BasicTableProps {
   rows: CaseData[];
@@ -16,113 +16,39 @@ interface BasicTableProps {
 
 const BasicTable: React.FC<BasicTableProps> = ({ rows, onRowClick }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} className="custom-table-container">
       <Table>
-        <TableHead>
+        <TableHead className="custom-table-head">
           <TableRow>
-            <TableCell style={{ backgroundColor: "#454545", color: "white" }}>
-              case_id
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              case_number
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              case_title
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              description
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              status
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              date_created
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              last_updated
-            </TableCell>
-            <TableCell
-              align="right"
-              style={{ backgroundColor: "#454545", color: "white" }}
-            >
-              assigned_to
-            </TableCell>
+            <TableCell>Case ID</TableCell>
+            <TableCell align="right">Case Number</TableCell>
+            <TableCell align="right">Title</TableCell>
+            <TableCell align="right">Description</TableCell>
+            <TableCell align="right">Status</TableCell>
+            <TableCell align="right">Date Created</TableCell>
+            <TableCell align="right">Last Updated</TableCell>
+            <TableCell align="right">Assigned To</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
-            <TableRow 
-                key={row.case_id} 
-                onClick={() => onRowClick && onRowClick(row)}
-                style={{ cursor:'pointer'}}
-              >
-              <TableCell
-                component="th"
-                scope="row"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
-                {row.case_id}
-              </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
-                {row.case_number}
-              </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
-                {row.title}
-              </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
-                {row.cdescription}
-              </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
-                {row.cstatus}
-              </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
+            <TableRow
+              key={row.case_id}
+              onClick={() => onRowClick(row)}
+              className="custom-table-row"
+            >
+              <TableCell>{row.case_id}</TableCell>
+              <TableCell align="right">{row.case_number}</TableCell>
+              <TableCell align="right">{row.title}</TableCell>
+              <TableCell align="right">{row.cdescription}</TableCell>
+              <TableCell align="right">{row.cstatus}</TableCell>
+              <TableCell align="right">
                 {new Date(row.date_created).toDateString()}
               </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
+              <TableCell align="right">
                 {new Date(row.last_updated).toDateString()}
               </TableCell>
-              <TableCell
-                align="right"
-                style={{ backgroundColor: "#737373", color: "white" }}
-              >
-                {row.assigned_to}
-              </TableCell>
+              <TableCell align="right">{row.assigned_to}</TableCell>
             </TableRow>
           ))}
         </TableBody>

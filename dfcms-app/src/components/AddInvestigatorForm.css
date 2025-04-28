@@ -1,21 +1,21 @@
-.admin-form-container {
+.add-investigator-form {
     max-width: 500px;
     margin: 2rem auto;
     padding: 2rem;
-    background: linear-gradient(135deg, #090a14, #0a0b0c, #0a0b0c);
+    background: linear-gradient(145deg, #1a1a1d, #121212);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     color: #ffffff;
   }
   
-  .admin-form-container h6 {
+  .add-investigator-form h6 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
     text-align: center;
   }
   
-  .admin-textfield {
+  .add-investigator-field {
     width: 100%;
     padding: 0.7rem;
     margin-bottom: 1rem;
@@ -27,16 +27,11 @@
     transition: 0.3s;
   }
   
-  .admin-textfield:focus {
+  .add-investigator-field:focus {
     border-color: #00bcd4;
-    background-color: #1c1c1e;
   }
   
-  .admin-textfield::placeholder {
-    color: #aaaaaa;
-  }
-  
-  .admin-submit-button {
+  .add-investigator-button {
     background-color: #00bcd4;
     color: #fff;
     padding: 0.7rem 1.5rem;
@@ -45,10 +40,11 @@
     cursor: pointer;
     font-weight: bold;
     margin-top: 1rem;
+    width: 100%;
     transition: background-color 0.3s;
   }
   
-  .admin-submit-button:hover {
+  .add-investigator-button:hover {
     background-color: #0097a7;
   }
   

@@ -1,15 +1,10 @@
-import "./CaseDetailModal.css";
 import React, { useEffect, useState } from "react";
+import "./CaseDetailModal.css";
 import {
   Dialog,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   Typography,
   Table,
   TableBody,
@@ -18,9 +13,14 @@ import {
   TableHead,
   TableRow,
   Paper,
-  CircularProgress,
-  TextField,
+  Button,
   Box,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import { CaseData } from "../pages/Dashboard";
 
@@ -78,8 +78,8 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!selectedCase || !selectedFile) return;
+
     const storedUser = localStorage.getItem("user");
     const collected_by = storedUser ? JSON.parse(storedUser).id : "";
 
@@ -96,12 +96,9 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
     try {
       const res = await fetch("http://localhost:3001/api/upload-evidence", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       const data = await res.json();
       if (data.success) {
         setShowUploadForm(false);
@@ -109,7 +106,6 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
         setType("");
         setEvidenceId("");
         setSelectedFile(null);
-        // Refresh evidence list
         const updatedEvidence = await fetch(
           `http://localhost:3001/api/evidence/${selectedCase.case_id}`
         ).then((res) => res.json());
@@ -125,28 +121,33 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
   if (!selectedCase) return null;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Case Details: {selectedCase.title}</DialogTitle>
-      <DialogContent dividers>
-        <Typography variant="subtitle1" gutterBottom>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      className="custom-dialog"
+    >
+      <DialogTitle className="custom-dialog-title">
+        Case Details: {selectedCase.title}
+      </DialogTitle>
+      <DialogContent dividers className="custom-dialog-content">
+        <Typography variant="subtitle1">
           Case ID: {selectedCase.case_id}
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          Evidence:
         </Typography>
         {loading ? (
           <CircularProgress />
         ) : evidence.length === 0 ? (
-          <Typography>No evidence found for this case.</Typography>
+          <Typography>No evidence found.</Typography>
         ) : (
-          <TableContainer component={Paper} sx={{ mb: 2 }}>
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Evidence ID</TableCell>
                   <TableCell>File Path</TableCell>
                   <TableCell>Hash</TableCell>
-                  <TableCell>Upload Date</TableCell>
+                  <TableCell>Date Collected</TableCell>
                   <TableCell>Type</TableCell>
                 </TableRow>
               </TableHead>
@@ -168,39 +169,41 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
         )}
 
         {showUploadForm && (
-          <Box
-            component="form"
-            onSubmit={handleUpload}
-            sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
-          >
+          <Box component="form" onSubmit={handleUpload} sx={{ mt: 2 }}>
             <TextField
               fullWidth
+              margin="normal"
               label="Evidence ID"
               value={evidenceId}
               onChange={(e) => setEvidenceId(e.target.value)}
-              margin="normal"
+              className="custom-textfield"
             />
             <TextField
               fullWidth
+              margin="normal"
               label="Description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              margin="normal"
+              className="custom-textfield"
             />
-            <FormControl fullWidth margin="normal" />
-            <InputLabel id="evidence-type-label">Evidence Type</InputLabel>
-            <Select
-              labelId="evidence-type-label"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              label="Evidence Type"
+            <FormControl
+              fullWidth
+              margin="normal"
+              className="custom-form-control"
             >
-              <MenuItem value="txt">Text</MenuItem>
-              <MenuItem value="img">Image</MenuItem>
-              <MenuItem value="video">Video</MenuItem>
-              <MenuItem value="audio">Audio</MenuItem>
-              <MenuItem value="other">Other</MenuItem>
-            </Select>
+              <InputLabel>Evidence Type</InputLabel>
+              <Select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                label="Evidence Type"
+              >
+                <MenuItem value="txt">Text</MenuItem>
+                <MenuItem value="img">Image</MenuItem>
+                <MenuItem value="video">Video</MenuItem>
+                <MenuItem value="audio">Audio</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </Select>
+            </FormControl>
             <input
               type="file"
               accept="*/*"
@@ -208,12 +211,12 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
               style={{ margin: "1rem 0" }}
             />
             <Button type="submit" variant="contained" color="success">
-              Upload Evidence
+              Upload
             </Button>
           </Box>
         )}
       </DialogContent>
-      <DialogActions>
+      <DialogActions className="custom-dialog-actions">
         {(userRole === "investigator" || userRole === "dba") && (
           <Button
             onClick={() => setShowUploadForm(true)}
@@ -223,6 +226,9 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
             Add Evidence
           </Button>
         )}
+        <Button onClick={onClose} color="secondary">
+          Close
+        </Button>
       </DialogActions>
     </Dialog>
   );

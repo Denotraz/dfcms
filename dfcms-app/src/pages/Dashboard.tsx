@@ -143,7 +143,7 @@ const Dashboard: React.FC = () => {
         {/* Floating Action Button to open the new case modal */}
         {(userRole == 'investigator' || userRole == 'dba') && (
         <Fab
-          color="secondary"
+          color="primary"
           aria-label="add"
           onClick={handleOpenModal}
           sx={{ position: "fixed", bottom: 16, right: 16 }}
