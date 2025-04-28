@@ -55,24 +55,25 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [evidenceId, setEvidenceId] = useState("");
 
-  useEffect(() => {
-    const fetchEvidence = async () => {
-      if (selectedCase) {
-        setLoading(true);
-        try {
-          const res = await fetch(
-            `http://localhost:3001/api/evidence/${selectedCase.case_id}`
-          );
-          const data = await res.json();
-          setEvidence(data);
-        } catch (err) {
-          console.error("Error fetching evidence:", err);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
 
+  const fetchEvidence = async () => {
+    if (selectedCase) {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:3001/api/evidence/${selectedCase.case_id}`
+        );
+        const data = await res.json();
+        setEvidence(data);
+      } catch (err) {
+        console.error("Error fetching evidence:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
     if (open) fetchEvidence();
   }, [open, selectedCase]);
 
@@ -106,10 +107,8 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
         setType("");
         setEvidenceId("");
         setSelectedFile(null);
-        const updatedEvidence = await fetch(
-          `http://localhost:3001/api/evidence/${selectedCase.case_id}`
-        ).then((res) => res.json());
-        setEvidence(updatedEvidence);
+
+        await fetchEvidence();
       } else {
         console.error("Upload failed:", data.message);
       }
@@ -135,8 +134,16 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
         <Typography variant="subtitle1">
           Case ID: {selectedCase.case_id}
         </Typography>
+
         {loading ? (
-          <CircularProgress />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            sx={{ mt: 3 }}
+          >
+            <CircularProgress />
+          </Box>
         ) : evidence.length === 0 ? (
           <Typography>No evidence found.</Typography>
         ) : (
@@ -168,6 +175,7 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
           </TableContainer>
         )}
 
+        {/* 📄 Upload form */}
         {showUploadForm && (
           <Box component="form" onSubmit={handleUpload} sx={{ mt: 2 }}>
             <TextField
@@ -216,6 +224,7 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
           </Box>
         )}
       </DialogContent>
+
       <DialogActions className="custom-dialog-actions">
         {(userRole === "investigator" || userRole === "dba") && (
           <Button

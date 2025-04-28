@@ -45,7 +45,7 @@ CREATE TABLE evidence (
 );
 
 CREATE TABLE CHAIN_OF_CUSTODY (
-    chain_id VARCHAR(10) PRIMARY KEY,
+    chain_id INT AUTO_INCREMENT PRIMARY KEY,
     case_id VARCHAR(10) NOT NULL,
     evidence_id VARCHAR(10) NOT NULL,
     investigator_id VARCHAR(10) NOT NULL,
