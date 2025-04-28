@@ -92,6 +92,32 @@ app.post("/api/create-investigator", verifyToken, (req, res) => {
   });
 });
 
+app.post("/api/create-department", verifyToken, (req, res) => {
+  const userRole = req.user.role;
+  if (userRole !== "dba") {
+    return res.status(403).json({ error: "Permission denied" });
+  }
+
+  const { department_id, department_name, location, phone_number } = req.body;
+
+  const query = `
+    INSERT INTO departments (department_id, department_name, location, phone_number)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  connection.query(
+    query,
+    [department_id, department_name, location, phone_number],
+    (error, results) => {
+      if (error) {
+        console.error("Database error:", error);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ success: true });
+    }
+  );
+});
+
 app.get("/api/departments", (req, res) => {
   const query = "SELECT department_id, department_name FROM departments";
   connection.query(query, (error, results) => {
@@ -100,8 +126,8 @@ app.get("/api/departments", (req, res) => {
       return res.status(500).json({ error: "Database error" });
     }
     res.json(results);
-  })
-})
+  });
+});
 
 app.get("/api/test-db", (req, res) => {
   connection.query("SELECT 1 AS test", (error, results) => {

@@ -3,7 +3,8 @@ import { Box, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import AddInvestigatorForm from "../components/AddInvestigatorForm";
-import "./Dashboard.css";
+import AddDepartmentForm from "../components/AddDepartmentForm";
+import "./AdminDashboard.css";
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -71,6 +72,7 @@ const AdminDashboard: React.FC = () => {
         </Typography>
 
         <AddInvestigatorForm departments={departments} onSubmit={handleCreateInvestigator} />
+        <AddDepartmentForm />
       </Box>
     </Box>
   );
