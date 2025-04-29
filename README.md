@@ -4,31 +4,33 @@
 DFCMS is a **web-based case management system** designed for **digital forensics investigations**. It enables secure **case tracking, evidence management, chain of custody tracking, and role-based access control** to protect digital forensic data.
 
 ## Features
--  **Role-based access control (RBAC)**
--  **Evidence management with SHA-256 and BCrypt integrity hashing**
--  **Case tracking and automatic updates**
--  **Chain of custody logging for sound legal proceedings**
--  **Investigator workload tracking**
--  **Secure authentication & access restrictions**
+- **Role-based access control (RBAC)**
+- **Evidence management with SHA-256 and bcrypt integrity hashing**
+- **Case tracking and automatic updates**
+- **Chain of custody logging for sound legal proceedings**
+- **Investigator workload tracking**
+- **Secure authentication and access restrictions**
 
 ## Technologies Used
-- **Frontend:** React, HTML, CSS, Bootstrap, Material UI for React
-- **Backend:** NodeJS + Express, Multer
+- **Frontend:** React, HTML, CSS, Bootstrap, Material UI (MUI)
+- **Backend:** Node.js + Express, Multer
 - **Database:** MySQL (with MySQL2 driver)
-- **Security:** SHA-256 Hashing, Json Web Tokening, BCrypt password hashing, Role Specific rendering, and more
+- **Security:** SHA-256 hashing, JSON Web Token (JWT) authentication, bcrypt password hashing, role-specific rendering, and more.
+
+---
 
 ## Current Progress
 - Database schema finalized
-
 - Backend API fully implemented (Node.js + Express)
-- Frontend developed with React + MUI
-- Authentication system implemented (JWT + bcrypt)
-- Evidence upload, storage, and integrity verification working
+- Frontend developed with React + Material UI
+- Authentication system (JWT + bcrypt) fully implemented
+- Evidence upload, storage, and SHA-256 integrity verification working
 - Chain of custody tracking implemented
 - Guest login functionality added
+
 ---
 
-### Before You Start (Dependencies)
+## Before You Start
 
 | Tool | Purpose | Download |
 |:-----|:--------|:---------|
@@ -37,13 +39,15 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 | **[MySQL Server](https://dev.mysql.com/downloads/mysql/)** | Hosts the database locally. | [Download MySQL Server](https://dev.mysql.com/downloads/mysql/) |
 | **[MySQL Workbench](https://dev.mysql.com/downloads/workbench/)** (recommended) | GUI for managing the MySQL database easily. | [Download MySQL Workbench](https://dev.mysql.com/downloads/workbench/) |
 
-
 ### Optional Tools
 | Tool | Purpose | Download |
 |:-----|:--------|:---------|
 | **[Visual Studio Code (VSCode)](https://code.visualstudio.com/)** | Code editor for working on the project easily. | [Download VSCode](https://code.visualstudio.com/) |
 
-## Installation Guide
+---
+
+##  Installation Guide
+
 ### **1️ Clone the Repository**
 ```bash
 git clone https://github.com/Denotraz/dfcms.git
