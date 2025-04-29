@@ -37,6 +37,12 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 | **[MySQL Server](https://dev.mysql.com/downloads/mysql/)** | Hosts the database locally. | [Download MySQL Server](https://dev.mysql.com/downloads/mysql/) |
 | **[MySQL Workbench](https://dev.mysql.com/downloads/workbench/)** (recommended) | GUI for managing the MySQL database easily. | [Download MySQL Workbench](https://dev.mysql.com/downloads/workbench/) |
 
+
+### Optional Tools
+| Tool | Purpose | Download |
+|:-----|:--------|:---------|
+| **[Visual Studio Code (VSCode)](https://code.visualstudio.com/)** | Code editor for working on the project easily. | [Download VSCode](https://code.visualstudio.com/) |
+
 ## Installation Guide
 ### **1️ Clone the Repository**
 ```bash
