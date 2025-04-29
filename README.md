@@ -40,11 +40,10 @@ npm install
 ```
 ### **3 Install Frontend Dependencies**
 ```bash
-cd /dfcms-app
+cd .\dfcms-app\
 npm install
 ```
-### **4 Install Database**
-```bash
-cd /dfcms-app
-npm install
-```
+### **4 Set-up MySQL Database**
+- Create a new Schema in MySQL Workbench, name it **dfcms**
+- Select the new Schema and import the DFCMSSchema.sql script and run it
+- Run the dataInsertion.sql script to fill with test data
