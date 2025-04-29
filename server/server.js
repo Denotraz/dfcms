@@ -347,6 +347,42 @@ app.post(
   }
 );
 
+app.post("/api/release-evidence", verifyToken, (req, res) => {
+  const { case_id, evidence_id } = req.body;
+  const user = req.user;
+
+  const guestInvestigatorId = "guest";
+  const guestDepartmentId = "D001";
+
+  const investigator_id = user.role === "guest" ? guestInvestigatorId : user.id;
+  const department_id =
+    user.role === "guest" ? guestDepartmentId : user.department_id;
+  const notes =
+    user.role === "guest"
+      ? "Evidence released to guest."
+      : "Evidence released by investigator.";
+
+  const query = `
+    INSERT INTO chain_of_custody (case_id, evidence_id, investigator_id, department_id, caction, date_time, notes)
+    VALUES (?, ?, ?, ?, 'released', NOW(), 'evidence released')
+  `;
+
+  connection.query(
+    query,
+    [case_id, evidence_id, investigator_id, department_id, notes],
+    (error, results) => {
+      if (error) {
+        console.error(
+          "Error inserting into chain of custody (release):",
+          error
+        );
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json({ success: true });
+    }
+  );
+});
+
 // Login endpoint using bcrypt for password comparison
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
@@ -401,6 +437,17 @@ app.post("/api/login", (req, res) => {
       }
     });
   });
+});
+
+app.post("/api/login-guest", (req, res) => {
+  const guestUser = {
+    id: "guest",
+    name: "Guest",
+    role: "guest",
+    department_id: "D001",
+  };
+  const token = jwt.sign(guestUser, JWT_SECRET, { expiresIn: "1h" });
+  return res.json({ success: true, user: guestUser, token });
 });
 
 // Start the server on port 3001

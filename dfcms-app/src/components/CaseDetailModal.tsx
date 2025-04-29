@@ -145,17 +145,37 @@ const CaseDetailsModal: React.FC<CaseDetailsModalProps> = ({
     }
   };
 
-  const handleDownloadEvidence = () => {
-    if (!selectedEvidence) return;
+  const handleDownloadEvidence = async () => {
+    if (!selectedEvidence || !selectedCase) return;
 
-    let filename = selectedEvidence.file_path;
-    if (filename.startsWith("evidence/")) {
-      filename = filename.replace("evidence/", "");
+    const token = localStorage.getItem("token");
+
+    try {
+      // Insert into Chain of Custody first
+      await fetch("http://localhost:3001/api/release-evidence", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          case_id: selectedCase.case_id,
+          evidence_id: selectedEvidence.evidence_id,
+        }),
+      });
+
+      // Then open the file for viewing
+      let filename = selectedEvidence.file_path;
+      if (filename.startsWith("evidence/")) {
+        filename = filename.replace("evidence/", "");
+      }
+
+      const viewUrl = `http://localhost:3001/${filename}`;
+      window.open(viewUrl, "_blank");
+    } catch (err) {
+      console.error("Error releasing evidence:", err);
+      alert("Failed to log release of evidence.");
     }
-
-    const viewUrl = `http://localhost:3001/${filename}`;
-
-    window.open(viewUrl, "_blank");
   };
 
   if (!selectedCase) return null;

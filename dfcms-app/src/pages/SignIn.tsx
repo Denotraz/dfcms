@@ -9,7 +9,6 @@ const SignIn: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-
   useEffect(() => {
     document.title = "DFCMS / Login";
   }, []);
@@ -18,42 +17,53 @@ const SignIn: React.FC = () => {
     event.preventDefault();
     setError("");
     try {
-        const response = await fetch("http://localhost:3001/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
-  
-        const data = await response.json();
-  
-        if (response.ok && data.success && data.token) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-          // If the login is successful, navigate to the dashboard
-          navigate("/dashboard");
-        } else {
-          // If login fails, display an error message from the API (or default message)
-          setError(data.message || "Invalid credentials. Please try again.");
-        }
-      } catch (err) {
-        console.error("Error during login:", err);
-        setError("An error occurred. Please try again later.");
+      const response = await fetch("http://localhost:3001/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        // If the login is successful, navigate to the dashboard
+        navigate("/dashboard");
+      } else {
+        // If login fails, display an error message from the API (or default message)
+        setError(data.message || "Invalid credentials. Please try again.");
       }
-    };
+    } catch (err) {
+      console.error("Error during login:", err);
+      setError("An error occurred. Please try again later.");
+    }
+  };
 
-  const handleGuestLogin = () => {
-    const guestUser = {
-      name: 'Guest',
-      role: 'guest',
-    };
+  const handleGuestLogin = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/api/login-guest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    const guestToken = JSON.stringify({user: guestUser, guest: true});
+      const data = await response.json();
 
-    localStorage.setItem('token', guestToken);
-    localStorage.setItem('user', JSON.stringify(guestUser));
-    navigate('/dashboard');
+      if (response.ok && data.success && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        navigate("/dashboard");
+      } else {
+        setError(data.message || "Guest login failed.");
+      }
+    } catch (err) {
+      console.error("Error during guest login:", err);
+      setError("An error occurred during guest login.");
+    }
   };
 
   return (

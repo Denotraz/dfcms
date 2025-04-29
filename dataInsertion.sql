@@ -8,7 +8,8 @@ VALUES
 INSERT INTO INVESTIGATOR (investigator_id, invname, email, phone, invrole, department_id, password)
 VALUES
     ('I001', 'Alice Johnson', 'alice@dfcms.com', '555-2345', 'investigator', 'D001', '$2b$10$TQ6Mh1CJHWnrOWePIO4BeOrAT60csvfe.lVuwEGroAYFl4VgsZDQe'),
-    ('I002', 'Bob Smith', 'bob@dfcms.com', '555-6789', 'dba', 'D002', '$2b$10$IiDaFYLmpgL/Eg.CeIv3x.JMcNOyhuLBQpXQm1I6QZpSeFulacLfa');
+    ('I002', 'Bob Smith', 'bob@dfcms.com', '555-6789', 'dba', 'D002', '$2b$10$IiDaFYLmpgL/Eg.CeIv3x.JMcNOyhuLBQpXQm1I6QZpSeFulacLfa'),
+    ('guest', 'Guest User', 'guest@dfcms.com', '555-0000', 'guest', 'D001', '$2b$10$TQ6Mh1CJHWnrOWePIO4BeOrAT60csvfe.lVuwEGroAYFl4VgsZDQe');
 
 INSERT INTO CASES (case_id, title, cdescription, cstatus, date_created, last_updated, assigned_to)
 VALUES
