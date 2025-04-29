@@ -33,9 +33,9 @@ app.use("/evidence", express.static(path.join(__dirname, "evidence")));
 
 // Create a MySQL connection
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root", // Replace with your MySQL username
-  password: "Hailstorm99!", // Replace with your MySQL password
+  host: "CHANGE_ME", // Replace with your MySQL host
+  user: "CHANGE_ME", // Replace with your MySQL username
+  password: "CHANGE_ME", // Replace with your MySQL password
   database: "dfcms", // Replace with your database name
 });
 
