@@ -28,6 +28,15 @@ DFCMS is a **web-based case management system** designed for **digital forensics
 - Guest login functionality added
 ---
 
+### Before You Start (Dependencies)
+
+| Tool | Purpose | Download |
+|:-----|:--------|:---------|
+| **[Node.js](https://nodejs.org/)** | Runs the backend server and frontend tooling. | [Download Node.js](https://nodejs.org/) |
+| **npm** (comes with Node) | Installs project dependencies. | (Installed automatically with Node.js) |
+| **[MySQL Server](https://dev.mysql.com/downloads/mysql/)** | Hosts the database locally. | [Download MySQL Server](https://dev.mysql.com/downloads/mysql/) |
+| **[MySQL Workbench](https://dev.mysql.com/downloads/workbench/)** (recommended) | GUI for managing the MySQL database easily. | [Download MySQL Workbench](https://dev.mysql.com/downloads/workbench/) |
+
 ## Installation Guide
 ### **1️ Clone the Repository**
 ```bash
@@ -47,3 +56,13 @@ npm install
 - Create a new Schema in MySQL Workbench, name it **dfcms**
 - Select the new Schema and import the DFCMSSchema.sql script and run it
 - Run the dataInsertion.sql script to fill with test data
+- Navigate to server.js and at the top, change *host*, *user*, *password* to your respective MySQL server login
+### **5 Run the Server**
+```bash
+cd .\server\
+node .\server.js
+```
+### **5 Run the FrontEnd**
+```bash
+npm run dev
+```
